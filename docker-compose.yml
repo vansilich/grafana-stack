@@ -5,7 +5,6 @@ volumes:
     grafana_data: {}
 
 services:
-
   prometheus:
     image: prom/prometheus:v2.43.0
     container_name: prometheus
@@ -29,10 +28,15 @@ services:
       
   loki:
     container_name: loki
-    image: grafana/loki:2.8.2
+    image: grafana/loki:${LOKI_VERSION}
     expose:
       - 3100
     command: -config.file=/etc/loki/local-config.yaml
+    environment:
+      - LOKI_S3_ENDPOINT=${LOKI_S3_ENDPOINT}
+      - S3_KEY_ID=${S3_KEY_ID}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_BUCKET=${S3_BUCKET}
     networks:
       - monitor-net
     labels:
@@ -112,8 +116,8 @@ services:
       - "3100:3100" # Loki
       - "8080:8080" # Cadvisor
       - "9090:9090" # Prometheus
-      - "9093:9093" # Alertmanager
-      - "9091:9091" # Pushgateway
+      - "9093:9093" # AlertManager
+      - "9091:9091" # PushGateway
     volumes:
       - ./caddy:/etc/caddy
     environment:

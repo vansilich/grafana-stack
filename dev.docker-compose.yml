@@ -1,5 +1,8 @@
 version: '3.8'
 
+volumes:
+  grafana-stack_minio: {}
+
 services:
   minio:
     image: minio/minio
@@ -12,15 +15,15 @@ services:
         mkdir -p /data/loki-ruler && \
         minio server /data
     environment:
-      - MINIO_ROOT_USER=loki
-      - MINIO_ROOT_PASSWORD=supersecret
+      - MINIO_ROOT_USER=${S3_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${S3_ACCESS_KEY}
       - MINIO_PROMETHEUS_AUTH_TYPE=public
       - MINIO_UPDATE=off
-    ports:
+    expose:
       - "9000"
       - "9001"
     volumes:
-      - ./.data/minio:/data
+      - grafana-stack_minio:/data
     networks:
       - monitor-net
     labels:
@@ -34,7 +37,7 @@ services:
     container_name: promtail
     depends_on:
       - loki
-    image: grafana/promtail:2.8.2
+    image: grafana/promtail:${LOKI_VERSION}
     volumes:
       - ./test.log:/var/log/apache2/access.log
       - ./promtail/docker-config.yml:/etc/promtail/docker-config.yml
