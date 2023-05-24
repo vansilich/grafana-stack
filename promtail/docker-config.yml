@@ -10,7 +10,7 @@ clients:
     batchwait: 20s
     batchsize: 5242880
     basic_auth:
-      admin: grafana_ingress
+      username: grafana_ingress
       password: 123123123
 
 scrape_configs:
