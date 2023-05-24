@@ -1,0 +1,32 @@
+server:
+  disable: true
+  log_level: debug
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    batchwait: 20s
+    batchsize: 5242880
+
+scrape_configs:
+  - job_name: apache
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: apache-logs
+          site: fluid-line.ru
+          service: apache
+          __path__: /var/log/apache2/access.log
+    pipeline_stages:
+      - regex:
+          expression: "^(?P<host>\\S+) (?P<ip>\\S+) (?P<identd>\\S+) (?P<user>\\S+) \\[(?P<timestamp>[\\w:/]+\\s[+\\-]\\d{4})\\] \"(?P<action>\\S+)\\s?(?P<path>\\S+)?\\s?(?P<protocol>\\S+)?\" (?P<status_code>\\d{3}|-) (?P<size>\\d+|-)\\s?\"?(?P<referer>[^\"]*)\"?\\s?\"?(?P<useragent>[^\"]*)?\"?"
+      - labels:
+          action:
+          status_code:
+      - timestamp:
+          source: timestamp
+          format: "02/Jan/2006:15:04:05 -0700"
+          location: "Europe/Moscow"

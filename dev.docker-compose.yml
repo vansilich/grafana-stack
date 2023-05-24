@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler && \
+        minio server /data
+    environment:
+      - MINIO_ROOT_USER=loki
+      - MINIO_ROOT_PASSWORD=supersecret
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+    ports:
+      - "9000"
+      - "9001"
+    volumes:
+      - ./.data/minio:/data
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+      
+  loki:
+    depends_on:
+      - minio
+
+  promtail:
+    container_name: promtail
+    depends_on:
+      - loki
+    image: grafana/promtail:2.8.2
+    volumes:
+      - ./test.log:/var/log/apache2/access.log
+      - ./promtail/docker-config.yml:/etc/promtail/docker-config.yml
+    command: -config.file=/etc/promtail/docker-config.yml
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+networks:
+  monitor-net:
+    driver: bridge
