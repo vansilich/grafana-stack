@@ -1,8 +1,17 @@
 auth_enabled: false
 
+query_scheduler:
+  grpc_client_config:
+    max_send_msg_size: 10485760
+    max_recv_msg_size: 10485760
+
+ingester_client:
+  grpc_client:
+    max_send_msg_size: 10485760
+    max_recv_msg_size: 10485760
+
 server:
   http_listen_port: 3100
-  max_recv_msg_size: 10485760
   grpc_server_max_recv_msg_size: 10485760
   log_level: info
 
