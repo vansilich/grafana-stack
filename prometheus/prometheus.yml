@@ -18,6 +18,11 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['158.160.43.92:9100']
+        
+  - job_name: 'nodeexporter_yandex.cloud_158.160.5.141'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['158.160.5.141:9100']
 
   - job_name: 'prometheus'
     scrape_interval: 10s
