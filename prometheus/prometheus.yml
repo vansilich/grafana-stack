@@ -23,6 +23,11 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['158.160.5.141:9100']
+        
+  - job_name: 'nodeexporter_ps.kz_77.240.38.205'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['77.240.38.205:9100']
 
   - job_name: 'prometheus'
     scrape_interval: 10s
@@ -41,8 +46,3 @@ alerting:
     static_configs:
     - targets: 
       - 'alertmanager:9093'
-
-#  - job_name: 'nginx'
-#    scrape_interval: 10s
-#    static_configs:
-#      - targets: ['nginxexporter:9113']
